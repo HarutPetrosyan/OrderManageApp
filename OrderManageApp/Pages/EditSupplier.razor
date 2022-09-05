@@ -1,0 +1,75 @@
+﻿@page "/EditSupplier"
+@using System.ComponentModel
+@using Newtonsoft.Json
+@using OrderManageApp.Services
+@inject AppServices app
+@inject NavigationManager nav
+
+@if (app.SupplierModel == null)
+{
+    <h3>Edit Supplier</h3>
+    <div>Loading...</div>
+}
+else
+{
+    <h3>Edit Supplier:  @app.SupplierModel.FirstName</h3>
+    <div style="max-width: 800px">
+        <div class="col">
+            <label>First Name:</label>
+            <input class="form-control" type="text" placeholder="FirstName..." @bind-value="app.SupplierModel.FirstName"/>
+        </div>
+        <div class="col">
+            <label>Last Name:</label>
+            <input class="form-control" type="text" placeholder="LastName..." @bind-value="app.SupplierModel.LastName"/>
+        </div>
+        <div class="col">
+            <label>Address Line1:</label>
+            <input class="form-control" type="text" placeholder="AddressLine1..." @bind-value="app.SupplierModel.AddressLine1"/>
+        </div>
+        <div class="col">
+            <label>Address Line2:</label>
+            <input class="form-control" type="text" placeholder="AddressLine2..." @bind-value="app.SupplierModel.AddressLine2"/>
+        </div>
+        <div class="col">
+            <label>EMail:</label>
+            <input class="form-control" type="text" placeholder="EMail..." @bind-value="app.SupplierModel.EMail"/>
+        </div>
+        <div class="col">
+            <label>City:</label>
+            <input class="form-control" type="text" placeholder="City..." @bind-value="app.SupplierModel.City"/>
+        </div>
+        <div class="col">
+            <label>Postal Code:</label>
+            <input class="form-control" type="number" placeholder="PostalCode..." @bind-value="app.SupplierModel.PostalCode"/>
+        </div>
+        <div class="col">
+            <label>State:</label>
+            <input class="form-control" type="text" placeholder="State..." @bind-value="app.SupplierModel.State"/>
+        </div>
+        <div class="col">
+            <button @onclick="()=>SaveSupplier()" type="button" class="btn btn-primary btn-sm" >
+               Save Supplier
+            </button>
+        </div>
+    </div>
+
+}
+@code {
+
+    public async void SaveSupplier()
+    {
+        HttpClient client = new HttpClient();
+        StringContent str = new StringContent(JsonConvert.SerializeObject(app.SupplierModel),System.Text.Encoding.UTF8,"application/json");
+        HttpResponseMessage response =  client.PutAsync("https://localhost:7210/UpdateUser",str).Result;
+
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("is Success" + response.Content.ReadAsStringAsync().Result);
+        }
+        else
+        {
+            Console.WriteLine("is bizimdir" + response.Content.ReadAsStringAsync().Result);
+        }
+
+    }
+}

@@ -1,0 +1,113 @@
+﻿@page "/SupplierList"
+@inject NavigationManager nav
+@inject AppServices app
+@using OrderManageApp.Models
+@using OrderManageApp.Shared
+
+@using OrderManageApp.Services
+@using Newtonsoft.Json
+
+
+<h2>Supplier List</h2>
+<hr/>
+@if (Suppliers != null)
+{ 
+    <table class="table">
+      <thead>
+      <tr>
+          <th>Actions</th>
+          <th>FirstName</th>
+          <th>LastName</th>
+          <th>AddressLine1</th>
+          <th>AddressLine2</th>
+          <th>EMail Address</th>
+          <th>City</th>
+          <th>PostalCode</th>
+          <th>City</th>
+      </tr>
+      </thead>
+      <tbody>
+      @foreach (var Supplier in Suppliers)
+      {
+          <tr>
+              <td>
+                  <button @onclick="()=>EditSupplier(Supplier)" type="button" class="btn btn-primary btn-sm" title="Edit Supplier">
+                      Edit Supplier
+                  </button>
+                  <button @onclick="()=>DeactivateSupplier(Supplier)" type="button" class="btn btn-primary btn-sm"  title="Deactivate Supplier">
+                      Deactivate Supplier
+                  </button>
+              </td>
+              <td>@Supplier.FirstName</td>
+              <td>@Supplier.LastName</td>
+              <td>@Supplier.AddressLine1</td>
+              <td>@Supplier.AddressLine2</td>
+              <td>@Supplier.EMail</td>
+              <td>@Supplier.City</td>
+              <td>@Supplier.PostalCode</td>
+              <td>@Supplier.State</td>
+          </tr>
+      }
+      </tbody>
+  </table>
+  
+}
+else
+{
+    <p><em>Loading Suppliers...</em></p>
+}
+
+
+
+@code
+{
+    public List<SupplierModel> Suppliers = new List<SupplierModel>();
+ 
+    public SupplierModel sup { get; set; }
+    [Inject]
+    public ISupplierService SupplierService { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        List<SupplierModel> Supplliers = new List<SupplierModel>();
+        Supplliers  = (await SupplierService.GetSuppliers()).ToList();
+        if (Supplliers != null)
+        {
+            foreach (var itam in Supplliers)
+            {
+                if (itam.Disable)
+                {
+                    Suppliers.Add(itam);
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine("IsEmpty");
+        }
+    }
+
+    void EditSupplier(SupplierModel model)
+    {
+        app.SupplierModel = model;
+        nav.NavigateTo("EditSupplier");
+    }
+
+    void DeactivateSupplier(SupplierModel model)
+    {
+        model.Disable = false;
+        HttpClient client = new HttpClient();
+        StringContent str = new StringContent(JsonConvert.SerializeObject(model),System.Text.Encoding.UTF8,"application/json");
+        string Connectionstring = "https://localhost:7210/DeleteUserById";
+        HttpResponseMessage response =  client.PutAsync(Connectionstring,str).Result;
+
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("is Success" + response.Content.ReadAsStringAsync().Result);
+        }
+        else
+        {
+            Console.WriteLine("is bizimdir" + response.Content.ReadAsStringAsync().Result);
+        }
+    }
+    
+}

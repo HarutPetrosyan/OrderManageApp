@@ -1,0 +1,74 @@
+﻿@page "/AddSupplier"
+@using OrderManageApp.Services
+@using OrderManageApp.Models
+@using Newtonsoft.Json
+@inject HttpClient http
+@inject NavigationManager nav
+
+
+<h3>AddSupplier</h3>
+
+
+<div style="max-width: 800px" action="https://localhost:7210/AddUser" method="post">
+    <div class="col">
+        <label>First Name:</label>
+        <input class="form-control" type="text" placeholder="FirstName..." @bind="@Sup.FirstName" name="FirstName"/>
+    </div>
+    <div class="col">
+        <label>Last Name:</label>
+        <input class="form-control" type="text" placeholder="LastName..." @bind="Sup.LastName" name="LastName"/>
+    </div>
+    <div class="col">
+        <label>Address Line1:</label>
+        <input class="form-control" type="text" placeholder="AddressLine1..." @bind="Sup.AddressLine1" name="AddressLine1" />
+    </div>
+    <div class="col">
+        <label>Address Line2:</label>
+        <input class="form-control" type="text" placeholder="AddressLine2..." @bind="Sup.AddressLine2" name="AddressLine2"/>
+    </div>
+    <div class="col">
+        <label>EMail:</label>
+        <input class="form-control" type="text" placeholder="EMail..." @bind="Sup.EMail" name="EMail"/>
+    </div>
+    <div class="col">
+        <label>City:</label>
+        <input class="form-control" type="text" placeholder="City..." @bind="Sup.City" name="City"/>
+    </div>
+    <div class="col">
+        <label>Postal Code:</label>
+        <input class="form-control" type="number" placeholder="PostalCode..." @bind="Sup.PostalCode" name="PostallCode" />
+    </div>
+    <div class="col">
+        <label>State:</label>
+        <input class="form-control" type="text" placeholder="State..." @bind="Sup.State" Name="State" />
+    </div>
+    <div class="col">
+        <button @onclick="AddUsers"  type="button" class="btn btn-primary btn-sm" >
+            Save Supplier
+        </button>
+    </div>
+</div>
+
+@code {
+    public SupplierModel Sup = new SupplierModel();
+    List<SupplierModel> Sups = new List<SupplierModel>();
+    public ISupplierService Service;
+    
+
+    public async void AddUsers()
+    {
+        HttpClient client = new HttpClient();
+        StringContent str = new StringContent(JsonConvert.SerializeObject(Sup),System.Text.Encoding.UTF8,"application/json");
+      HttpResponseMessage response =  client.PutAsync("https://localhost:7210/AddUser",str).Result;
+
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("is Success" + response.Content.ReadAsStringAsync().Result);
+        }
+        else
+        {
+            Console.WriteLine("is bizimdir" + response.Content.ReadAsStringAsync().Result);
+        }
+        nav.NavigateTo("SupplierList");
+    }
+}

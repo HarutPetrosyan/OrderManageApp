@@ -1,0 +1,16 @@
+﻿@page "/Supplier"
+@inject NavigationManager Nav
+<h3>
+    <button @onclick="AddSupplier" type="button" class="btn btn-success" style="float: right;">
+        Add Supplier
+    </button>
+</h3>
+
+<SupplierList></SupplierList>
+@code {
+
+    void AddSupplier()
+    {
+        Nav.NavigateTo("AddSupplier");
+    }
+}
